@@ -33,6 +33,20 @@ function App() {
                 console.log(error.message)
             });
     }
+    const handleSignOut = () => {
+        firebase.auth().signOut().then(() => {
+            const user = {
+                isAuthenticated: false,
+                name: '',
+                email: '',
+                photoUrl: ''
+            }
+            setUser(user)
+        }).catch((error) => {
+            // An error happened.
+        });
+    }
+
     return (
         <div className="App">
             {
@@ -42,6 +56,7 @@ function App() {
                         <h4>Your are logged In as: {user.name}</h4>
                         <h4>Your are logged In as: {user.email}</h4>
                         <img src={user.photoUrl} alt=""/>
+                        <button onClick={handleSignOut}>Sign Oout</button>
                     </>
             }
 
