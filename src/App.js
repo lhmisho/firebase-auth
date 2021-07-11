@@ -4,8 +4,12 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import {firebaseConfig} from "./firebase-auth";
 
-firebase.initializeApp(firebaseConfig);
 
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}else {
+    firebase.app(); // if already initialized, use that one
+}
 function App() {
     const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -46,7 +50,24 @@ function App() {
             // An error happened.
         });
     }
-
+    const handleBlur = (e) => {
+        const newUser = {...user}
+        newUser[e.target.name] = e.target.value
+        setUser(newUser)
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+            .then((userCredential) => {
+                var user = userCredential.user;
+                console.log(user)
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                console.log(errorMessage)
+            });
+    }
     return (
         <div className="App">
             {
@@ -59,7 +80,14 @@ function App() {
                         <button onClick={handleSignOut}>Sign Oout</button>
                     </>
             }
-
+            <h1>Own authentication system</h1>
+            <form action="" onSubmit={handleSubmit}>
+                <input type="text" name="email" onBlur={handleBlur} placeholder="email" required/>
+                <br/>
+                <input type="password" name="password" onBlur={handleBlur} placeholder="Password" required/>
+                <br/>
+                <input type="submit" value="Submit"/>
+            </form>
         </div>
     );
 };
